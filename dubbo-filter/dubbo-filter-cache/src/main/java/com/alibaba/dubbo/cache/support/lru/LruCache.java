@@ -33,7 +33,7 @@ public class LruCache implements Cache {
 
     public LruCache(URL url) {
         final int max = url.getParameter("cache.size", 1000);
-        this.store = new LinkedHashMap<Object, Object>() {
+        this.store = new LinkedHashMap<Object, Object>(16, 0.75f, true) {
             private static final long serialVersionUID = -3834209229668463829L;
             @Override
             protected boolean removeEldestEntry(Entry<Object, Object> eldest) {

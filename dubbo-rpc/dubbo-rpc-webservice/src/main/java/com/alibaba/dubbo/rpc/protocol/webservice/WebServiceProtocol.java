@@ -52,6 +52,7 @@ import com.alibaba.dubbo.rpc.protocol.AbstractProxyProtocol;
  * WebServiceProtocol.
  * 
  * @author netcomm
+ * @update:[2016/2/23][Shaoze Wang][更新HTTPTransportFactory版本到3.1.5]
  */
 public class WebServiceProtocol extends AbstractProxyProtocol {
     
@@ -59,15 +60,15 @@ public class WebServiceProtocol extends AbstractProxyProtocol {
 
     private final Map<String, HttpServer> serverMap = new ConcurrentHashMap<String, HttpServer>();
     
-    private final ExtensionManagerBus bus = new ExtensionManagerBus();
+//    private final ExtensionManagerBus bus = new ExtensionManagerBus();
 
-    private final HTTPTransportFactory transportFactory = new HTTPTransportFactory(bus);
+    private final HTTPTransportFactory transportFactory = new HTTPTransportFactory();
 	
     private HttpBinder httpBinder;
     
     public WebServiceProtocol() {
         super(Fault.class);
-        bus.setExtension(new ServletDestinationFactory(), HttpDestinationFactory.class);
+//        bus.setExtension(new ServletDestinationFactory(), HttpDestinationFactory.class);
     }
 
     public void setHttpBinder(HttpBinder httpBinder) {
@@ -112,12 +113,11 @@ public class WebServiceProtocol extends AbstractProxyProtocol {
         serverFactoryBean.setAddress(url.getAbsolutePath());
     	serverFactoryBean.setServiceClass(type);
     	serverFactoryBean.setServiceBean(impl);
-    	serverFactoryBean.setBus(bus);
+//    	serverFactoryBean.setBus(bus);
         serverFactoryBean.setDestinationFactory(transportFactory);
     	serverFactoryBean.create();
         return new Runnable() {
             public void run() {
-            	serverFactoryBean.destroy();
             }
         };
     }
@@ -127,7 +127,7 @@ public class WebServiceProtocol extends AbstractProxyProtocol {
     	ClientProxyFactoryBean proxyFactoryBean = new ClientProxyFactoryBean();
     	proxyFactoryBean.setAddress(url.setProtocol("http").toIdentityString());
     	proxyFactoryBean.setServiceClass(serviceType);
-    	proxyFactoryBean.setBus(bus);
+//    	proxyFactoryBean.setBus(bus);
     	T ref = (T) proxyFactoryBean.create();
     	Client proxy = ClientProxy.getClient(ref);  
 		HTTPConduit conduit = (HTTPConduit) proxy.getConduit();
